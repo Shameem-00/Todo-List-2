@@ -22,10 +22,17 @@ class TodoProvider extends ChangeNotifier{
   }
 
   /// Update Task
-  void updateTask({required int index, required String title, required String subtitle}){
+  void updateTask({
+    required int index,
+    required String title,
+    required String subtitle,
+  }) {
 
-    _task[index].title = title;
-    _task[index].subtitle = subtitle;
+    task[index] = TodoModel(
+      title: title,
+      subtitle: subtitle,
+    );
+
     notifyListeners();
   }
 

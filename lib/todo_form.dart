@@ -3,10 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:todo_list2/todo_model.dart';
 
-class TodoForm extends StatelessWidget {
-   TodoForm({super.key});
+class TodoForm extends StatefulWidget {
+  const TodoForm({
+    super.key,
+    this.todoModel,
+    this.index,
+  });
 
+  final TodoModel? todoModel;
+  final int? index;
+
+  @override
+  State<TodoForm> createState() => _TodoFormState();
+}
+
+class _TodoFormState extends State<TodoForm> {
   final TextEditingController titleController =  TextEditingController();
+
   final TextEditingController subtitleController =  TextEditingController();
 
   @override
