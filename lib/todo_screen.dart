@@ -34,30 +34,19 @@ class TodoScreen extends StatelessWidget {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-
                     /// update task
                     IconButton(
                       onPressed: () async {
-
                         final data = await Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => TodoForm(
-                              todoModel: value.task[index],
-                              index: index,
-                            ),
-                          ),
+                          MaterialPageRoute(builder: (_) => TodoForm(todoModel: value.task[index], index: index)),
                         );
 
                         if (data == null) return;
 
                         final todoModel = data as TodoModel;
 
-                        context.read<TodoProvider>().updateTask(
-                          index: index,
-                          title: todoModel.title,
-                          subtitle: todoModel.subtitle,
-                        );
+                        context.read<TodoProvider>().updateTask(index: index, title: todoModel.title, subtitle: todoModel.subtitle);
                       },
                       icon: Icon(Icons.edit, color: Colors.blue),
                     ),
