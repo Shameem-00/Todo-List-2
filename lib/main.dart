@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_list2/todo_provider.dart';
-import 'package:todo_list2/todo_screen.dart';
+
+import 'todo_provider.dart';
+import 'todo_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,18 +11,8 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: ChangeNotifierProvider(create: (_) => TodoProvider(), child: TodoScreen(),),
-    );
+    return ChangeNotifierProvider(create: (_) => TodoProvider(), child: const MaterialApp(debugShowCheckedModeBanner: false, home: TodoScreen()));
   }
 }
-

@@ -1,71 +1,82 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
-import 'package:todo_list2/todo_model.dart';
+import 'todo_model.dart';
+
+final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
 class TodoForm extends StatefulWidget {
-  const TodoForm({
-    super.key,
-    this.todoModel,
-    this.index,
-  });
+  const TodoForm({super.key, this.todoModel});
 
   final TodoModel? todoModel;
-  final int? index;
 
   @override
   State<TodoForm> createState() => _TodoFormState();
 }
 
 class _TodoFormState extends State<TodoForm> {
-  final TextEditingController titleController =  TextEditingController();
+  final TextEditingController titleController = TextEditingController();
 
-  final TextEditingController subtitleController =  TextEditingController();
+  final TextEditingController subtitleController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    titleController.text = widget.todoModel?.title ?? '';
+    subtitleController.text = widget.todoModel?.subtitle ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.orange,
-        title: Text('ToDo Form',style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20 ),),
-      ),
+      appBar: AppBar(title: const Text('Todo Form')),
 
       body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(
-                hintText: 'Enter Title',
-                border: OutlineInputBorder(),
-                errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red)
-                )
+        padding: const EdgeInsets.all(16),
+
+        child: Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            children: [
+              Column(
+                children: [
+                  TextFormField(
+                    controller: titleController,
+                    decoration: const InputDecoration(hintText: 'Enter Title', border: OutlineInputBorder()),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return "required";
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+
+                  TextFormField(
+                    controller: subtitleController,
+                    decoration: const InputDecoration(hintText: 'Enter Subtitle', border: OutlineInputBorder()),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return "required";
+                      return null;
+                    },
+                  ),
+                ],
               ),
-            ),
-            Gap(10),
-            TextField(
-              controller: subtitleController,
-              decoration: InputDecoration(
-                  hintText: 'Enter Subtitle',
-                  border: OutlineInputBorder(),
-                  errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red)
-                  )
+
+              const Spacer(),
+
+              SizedBox(
+                width: double.infinity,
+
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      Navigator.pop(context, TodoModel(id: widget.todoModel?.id, title: titleController.text, subtitle: subtitleController.text));
+                    }
+                  },
+
+                  child: const Text('Save'),
+                ),
               ),
-            ),
-            Spacer(),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(onPressed: (){
-                final data = TodoModel(title: titleController.text, subtitle: subtitleController.text);
-                Navigator.pop(context, data);
-              },
-                  child: Text('Save')
-              ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );

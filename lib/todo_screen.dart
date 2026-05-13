@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_list2/todo_form.dart';
-import 'package:todo_list2/todo_model.dart';
-import 'package:todo_list2/todo_provider.dart';
+
+import 'todo_form.dart';
+import 'todo_model.dart';
+import 'todo_provider.dart';
 
 class TodoScreen extends StatelessWidget {
   const TodoScreen({super.key});
@@ -12,49 +11,47 @@ class TodoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.orange,
-        title: Row(
-          children: [
-            CircleAvatar(radius: 20),
-            Gap(10),
-            Text('ToDo List', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20)),
-          ],
-        ),
-      ),
+      appBar: AppBar(title: const Text('Todo App')),
+
       body: Consumer<TodoProvider>(
         builder: (context, value, child) {
           return ListView.builder(
             itemCount: value.task.length,
-            itemBuilder: (BuildContext context, int index) {
+
+            itemBuilder: (context, index) {
+              final todo = value.task[index];
+
               return ListTile(
-                title: Text(value.task[index].title),
-                subtitle: Text(value.task[index].subtitle),
+                title: Text(todo.title),
+
+                subtitle: Text(todo.subtitle),
 
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
+
                   children: [
-                    /// update task
+                    /// Edit
                     IconButton(
                       onPressed: () async {
-                        final data = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => TodoForm(todoModel: value.task[index], index: index)),
-                        );
+                        final data = await Navigator.push(context, MaterialPageRoute(builder: (_) => TodoForm(todoModel: todo)));
 
                         if (data == null) return;
 
-                        final todoModel = data as TodoModel;
+                        final TodoModel todoModel = data;
 
-                        context.read<TodoProvider>().updateTask(index: index, title: todoModel.title, subtitle: todoModel.subtitle);
+                        context.read<TodoProvider>().updateTask(id: todo.id!, title: todoModel.title, subtitle: todoModel.subtitle);
                       },
-                      icon: Icon(Icons.edit, color: Colors.blue),
+
+                      icon: const Icon(Icons.edit),
                     ),
+
+                    /// Delete
                     IconButton(
                       onPressed: () {
-                        value.deleteTask(index);
+                        context.read<TodoProvider>().deleteTask(todo.id!);
                       },
-                      icon: Icon(Icons.delete, color: Colors.red),
+
+                      icon: const Icon(Icons.delete),
                     ),
                   ],
                 ),
@@ -63,15 +60,19 @@ class TodoScreen extends StatelessWidget {
           );
         },
       ),
+
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.orange,
         onPressed: () async {
-          final data = await Navigator.push(context, MaterialPageRoute(builder: (_) => TodoForm()));
+          final data = await Navigator.push(context, MaterialPageRoute(builder: (_) => const TodoForm()));
+
           if (data == null) return;
-          final todoModel = data as TodoModel;
+
+          final TodoModel todoModel = data;
+
           context.read<TodoProvider>().addTask(title: todoModel.title, subtitle: todoModel.subtitle);
         },
-        child: Icon(Icons.add, color: Colors.white, size: 26),
+
+        child: const Icon(Icons.add),
       ),
     );
   }

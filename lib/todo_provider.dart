@@ -1,39 +1,60 @@
-import 'package:flutter/cupertino.dart';
-import 'package:todo_list2/todo_model.dart';
+import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 
-class TodoProvider extends ChangeNotifier{
-  final List<TodoModel> _task = [];
+import 'database_helper.dart';
+import 'todo_model.dart';
+
+class TodoProvider extends ChangeNotifier {
+  List<TodoModel> _task = [];
 
   List<TodoModel> get task => _task;
 
-  ///Add Task
-  void addTask({required String title, required String subtitle}){
-    if(title.trim().isEmpty || subtitle.trim().isEmpty) {
-      return;
-    }
-    _task.add(TodoModel(title: title, subtitle: subtitle));
+  TodoProvider() {
+    fetchTask();
+  }
+
+  /// Fetch Task
+  Future<void> fetchTask() async {
+    final Database db = await DatabaseHelper.database;
+
+    final List<Map<String, dynamic>> maps = await db.query('todo');
+
+    _task =
+        maps.map((e) {
+          return TodoModel(id: e['id'], title: e['title'], subtitle: e['subtitle']);
+        }).toList();
+
     notifyListeners();
   }
 
-  ///Delete Task
-  void deleteTask(int index){
-    _task.removeAt(index);
-    notifyListeners();
+  /// Add Task
+  Future<void> addTask({required String title, required String subtitle}) async {
+    if (title.trim().isEmpty || subtitle.trim().isEmpty) {
+      return;
+    }
+
+    final Database db = await DatabaseHelper.database;
+
+    await db.insert('todo', {'title': title, 'subtitle': subtitle});
+
+    await fetchTask();
+  }
+
+  /// Delete Task
+  Future<void> deleteTask(int id) async {
+    final Database db = await DatabaseHelper.database;
+
+    await db.delete('todo', where: 'id = ?', whereArgs: [id]);
+
+    await fetchTask();
   }
 
   /// Update Task
-  void updateTask({
-    required int index,
-    required String title,
-    required String subtitle,
-  }) {
+  Future<void> updateTask({required int id, required String title, required String subtitle}) async {
+    final Database db = await DatabaseHelper.database;
 
-    task[index] = TodoModel(
-      title: title,
-      subtitle: subtitle,
-    );
+    await db.update('todo', {'title': title, 'subtitle': subtitle}, where: 'id = ?', whereArgs: [id]);
 
-    notifyListeners();
+    await fetchTask();
   }
-
 }

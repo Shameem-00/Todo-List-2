@@ -1,5 +1,6 @@
 class TodoModel{
-  late final String title;
-  late final String subtitle;
-  TodoModel({required this.subtitle, required this.title});
+   final String title;
+   final int? id;
+   final String subtitle;
+  TodoModel({required this.subtitle, required this.title, this.id});
 }
